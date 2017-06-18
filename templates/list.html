@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <title>Resume DB Store</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="static/css/jumbotron-narrow.css" rel="stylesheet">
+
+    <script src="static/js/angular.js"></script>
+
+    <script>
+        angular.module('myApp', [])
+            .controller('HomeCtrl', function($scope, $http) {
+			
+				$scope.info = {};
+				
+				$scope.showAdd = true;
+			
+				$scope.showlist = function(){
+					$http({
+						method: 'POST',
+						url: '/getQualificationList',
+
+					}).then(function(response) {
+						$scope.qualifications = response.data;
+						console.log('mm',$scope.qualifications);
+					}, function(error) {
+						console.log(error);
+					});
+				}
+
+
+				$scope.addqualification = function(){
+					
+					$http({
+						method: 'POST',
+						url: '/addQualification',
+						data: {info:$scope.info}
+					}).then(function(response) {
+						$scope.showlist();
+						$('#addPopUp').modal('hide')
+						$scope.info = {}
+					}, function(error) {
+						console.log(error);
+					});
+				}
+				$scope.editqualification = function(id){
+					$scope.info.id = id;
+					
+					$scope.showAdd = false;
+					
+					$http({
+						method: 'POST',
+						url: '/getQualification',
+						data: {id:$scope.info.id}
+					}).then(function(response) {
+						console.log(response);
+						$scope.info = response.data;
+						$('#addPopUp').modal('show')
+					}, function(error) {
+						console.log(error);
+					});
+				}
+				
+				$scope.updatequalification = function(id){
+				
+					$http({
+						method: 'POST',
+						url: '/updateQualification',
+						data: {info:$scope.info}
+					}).then(function(response) {
+						console.log(response.data);
+						$scope.showlist();
+						$('#addPopUp').modal('hide')
+					}, function(error) {
+						console.log(error);
+					});
+				}
+				
+
+				$scope.showAddPopUp = function(){
+					$scope.showAdd = true;
+					$scope.info = {};
+					$('#addPopUp').modal('show')
+				}
+
+				$scope.confirmDelete = function(id){
+					$scope.deletequalificationId = id;
+					$('#deleteConfirm').modal('show');
+				}
+				
+				$scope.deletequalification = function(){
+					
+					$http({
+						method: 'POST',
+						url: '/deleteQualification',
+						data: {id:$scope.deletequalificationId}
+					}).then(function(response) {
+						console.log(response.data);
+						$scope.deletequalificationId = '';
+						$scope.showlist();
+						$('#deleteConfirm').modal('hide')
+					}, function(error) {
+						console.log(error);
+					});
+				}
+				
+				$scope.showlist();
+
+           })
+    </script>
+	
+
+</head>
+
+<body ng-controller="HomeCtrl">
+    <div class="container">
+        <div class="header clearfix">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active"><a href="#" data-toggle="modal" ng-click="showAddPopUp()" >Add</a></li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">Resume Qualification Database Creator</h3>
+	    <h3 class="text-muted">Python Flask, AngularJS and MongoDB</h3>
+        </div>
+
+        <div class="bs-example" data-example-id="panel-without-body-with-table">
+            <div class="panel panel-default">
+                <div class="panel-heading">Qualifications list</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Job</th>
+                            <th>Text</th>
+                            <th>Link Word1</th>
+                            <th>Link Word2</th>
+                            <th>Link Word3</th>
+			    <th></th>
+			    <th></th>
+			    <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="qualification in qualifications track by $index">
+                            <th scope="row"></th>
+                            <td>{{ '{{qualification.job}}' }}</td>
+                            <td>{{ '{{qualification.text}}' }}</td>
+                            <td> {{'{{qualification.link1}}'}}</td>
+                            <td>{{'{{qualification.link2}}'}}</td>
+                            <td>{{'{{qualification.link3}}'}}</td>
+			    <td><span style="cursor:pointer;" ng-click="editqualification(qualification.id)" class="glyphicon glyphicon-pencil" aria-hidden="true"></span></td>
+			    <td><span style="cursor:pointer;color:#e43309;" ng-click="confirmDelete(qualification.id)" class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+                        </tr>
+                       
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="addPopUp" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel" >Add qualification info</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="txtJob" class="control-label">Job:</label>
+                            <input type="text" class="form-control" ng-model="info.job" id="txtJob">
+                        </div>
+                        <div class="form-group">
+                            <label for="txtText" class="control-label">Text:</label>
+                            <input type="text" class="form-control" ng-model="info.text" id="txtText">
+                        </div>
+                        <div class="form-group">
+                            <label for="txtLink1" class="control-label">Link 1:</label>
+                            <input type="text" class="form-control" ng-model="info.link1" id="txtLink1">
+                        </div>
+                        <div class="form-group">
+                            <label for="txtLink2" class="control-label">Link 2:</label>
+                            <input type="text" class="form-control" ng-model="info.link2" id="txtLink2">
+                        </div>
+                        <div class="form-group">
+                            <label for="txtLink3" class="control-label">Link3:</label>
+                            <input type="text" class="form-control" ng-model="info.link3" id="txtLink3">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"  class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button ng-show="showAdd" id="btnAdd" ng-click="addqualification()" type="button" class="btn btn-primary">Add qualification</button>
+			
+					<button ng-show="!showAdd" id="btnAdd" ng-click="updatequalification()" type="button" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+	
+	<div id="deleteConfirm" class="modal fade bs-example-modal-md in" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+					<h4 class="modal-title" id="myLargeModalLabel">You are about to delete this entry. Do you want to proceed ?</h4> </div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" ng-click="deletequalification()" class="btn btn-primary">Delete</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
