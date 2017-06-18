@@ -6,7 +6,10 @@ from flask import Flask,render_template,jsonify,json,request
 application = Flask(__name__)
 
 client = MongoClient('localhost:27017')
+client.QualificationData.authenticate('accountUser','password',mechanism='SCRAM-SHA-1')
 db = client.QualificationData
+
+
 
 @application.route("/addQualification",methods=['POST'])
 def addQualification():
