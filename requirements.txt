@@ -1,4 +1,4 @@
-gunicorn
+bson
 Flask
 pymongo
-bson
+gunicorn
