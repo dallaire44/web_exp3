@@ -7,7 +7,7 @@ application = Flask(__name__)
 
 client = MongoClient('localhost:27017')
 #client.QualificationData.authenticate('accountUser','password',mechanism='SCRAM-SHA-1')
-db = client.QualificationData
+#db = client.QualificationData
 
 
 
