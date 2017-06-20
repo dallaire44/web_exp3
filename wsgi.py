@@ -1,15 +1,15 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flask import Flask,render_template,jsonify,json,request
+import os
 
 
 application = Flask(__name__)
 
-#client = MongoClient('localhost:27017')
-#client.QualificationData.authenticate('accountUser','password',mechanism='SCRAM-SHA-1')
-#db = client.QualificationData
 
-client = MongoClient('mongodb://dd:dd1dd@ds143131.mlab.com:43131/sampledb')
+MONGO_DB = os.environ.get('MONGO_DB', None)
+
+client = MongoClient(MONGO_DB)
 db = client.sampledb
 
 
