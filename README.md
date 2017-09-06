@@ -1,6 +1,7 @@
 # Flask Sample Application
 
-This repository provides a sample Python web application implemented using the Flask web framework and hosted using ``gunicorn``. It is intended to be used to demonstrate deployment of Python web applications to OpenShift 3.
+This repository provides a small tython flask application using AngularJS, Bootstrap, MongoDB, REST, MVVM. 
+
 
 ## Implementation Notes
 
@@ -10,28 +11,20 @@ This sample Python application relies on the support provided by the default S2I
 * The WSGI application entry point within the code file needs to be named ``application``.
 * The ``gunicorn`` package must be listed in the ``requirements.txt`` file for ``pip``.
 
-In addition, the ``.s2i/environment`` file has been created to allow environment variables to be set to override the behaviour of the default S2I builder for Python.
-
-* The environment variable ``APP_CONFIG`` has been set to declare the name of the config file for ``gunicorn``.
 
 ## Deployment Steps
 
-To deploy this sample Python web application from the OpenShift web console, you should select ``python:2.7``, ``python:3.3``, ``python:3.4`` or ``python:latest``, when using _Add to project_. Use of ``python:latest`` is the same as having selected the most up to date Python version available, which at this time is ``python:3.4``.
+This app was deployed to Heroku: https://www.heroku.com/home
 
-The HTTPS URL of this code repository which should be supplied to the _Git Repository URL_ field when using _Add to project_ is:
+Followed the steps in following:
 
-* https://github.com/OpenShiftDemos/os-sample-python.git
+https://devcenter.heroku.com/articles/getting-started-with-python#set-up
 
-If using the ``oc`` command line tool instead of the OpenShift web console, to deploy this sample Python web application, you can run:
 
-```
-oc new-app https://github.com/OpenShiftDemos/os-sample-python.git
-```
+Need to set the following two environment variables in Heroku:
 
-In this case, because no language type was specified, OpenShift will determine the language by inspecting the code repository. Because the code repository contains a ``requirements.txt``, it will subsequently be interpreted as including a Python application. When such automatic detection is used, ``python:latest`` will be used.
+heroku config:set MONGO_DB=mongodb://dd:<user>@ds<number>.mlab.com:43131/sampledb
 
-If needing to select a specific Python version when using ``oc new-app``, you should instead use the form:
+export MONGO_DB=mongodb://dd:<user>@ds<number>.mlab.com:43131/sampledb
 
-```
-oc new-app python:2.7~https://github.com/OpenShiftDemos/os-sample-python.git
-```
+Mongo db is hosted at mlab: https://mlab.com/signup/
